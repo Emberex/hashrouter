@@ -3,4 +3,4 @@ http://emberex.com/hashrouter
 
 The site includes documentation, tutorials, and examples.
 
-This repository contains copies of the code for a number of projects on which 
+This repository contains the entire demonstration and documentation site for easy reference. This repository therefore also contains copies of jquery, jquery history, jquery ui etc. It is highly recommended that you download these separately from their respective sources.
