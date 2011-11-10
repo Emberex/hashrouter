@@ -1,0 +1,246 @@
+<div class="whitebox" id="scrollLinks">
+  <h2>Documentation</h2>
+  <ul>
+    <li><a href="#!scrollTo:hr">$(selector).hr()</a></li>
+    <li><a href="#!scrollTo:init">$.hr.init()</a></li>
+    <li><a href="#!scrollTo:get">$.hr.get()</a></li>
+    <li><a href="#!scrollTo:set">$.hr.set()</a></li>
+    <li><a href="#!scrollTo:remove">$.hr.remove()</a></li>
+    <li><a href="#!scrollTo:setDefault">$.hr.setDefault()</a></li>
+    <li><a href="#!scrollTo:removeDefault">$.hr.removeDefault()</a></li>
+    <li><a href="#!scrollTo:getKeys">$.hr.getKeys()</a></li>
+    <li><a href="#!scrollTo:getAll">$.hr.getAll()</a></li>
+    <li><a href="#!scrollTo:setUrl">$.hr.setUrl()</a></li>
+    <li><a href="#!scrollTo:trigger">$.hr.trigger()</a></li>
+    <li><a href="#!scrollTo:triggerAll">$.hr.triggerAll()</a></li>
+    <li><a href="#!scrollTo:bind">$.hr.bind()</a></li>
+    <li><a href="#!scrollTo:parseElement">$.hr.parseElement()</a></li>
+  </ul>
+</div>
+<div class="whitebox">
+<h3 id="hr">$(selector).hr(variable, callback)</h3>
+<p>Attach a handler to the url changing when the selected element is in the dom.
+See this in action. See a demonstration on the <a href="##page:tabs">tabs feature page</a>.</p>
+
+<p>Single Variable</p>
+<code>
+$('#selector').hr('variable', function(value, variable) {
+  //event code
+});
+
+</code>
+
+<p>Every Variable - Called every time any variable is updated</p>
+<code>
+$('#selector').hr('_', function(value, variable) {
+  //event code
+});
+
+</code>
+
+<h3>$(selector).hr(variables, callback)</h3>
+<p>Multiple Variables - Only called once per request cycle</p>
+<code>
+$('#selector').hr(['var1', 'var2'], function(values, name) {
+//values - A hash of all values declared in the event
+//name - The value that changed, others may have changed
+});
+
+</code>
+
+<p>Every Variable Exclusive - Only called once per request cycle</p>
+<code>
+$('#selector').hr(['_'], function(values, name) {
+//values - A hash of all values declared in the event
+//name - The value that changed, others may have changed
+});
+
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="init">$.hr.init(options)</h3>
+<p>Calling the initialize method is required to use HashRouter.</p>
+<p>Options (default):</p>
+<ul>
+  <li><strong>searchEngineFriendly</strong> (true) - Include ! in urls for <a href="http://code.google.com/web/ajaxcrawling/docs/getting-started.html">google crawler</a>.</li>
+  <li><strong>errorLogging</strong> (false) - Display errors in the script console</li>
+  <li><strong>autoParse</strong> (true) - Update link tags after every url change</li>
+  <li><strong>routes</strong> - A <a href="##page:objectRoutes">route object</a>.
+</ul>
+<p>For example:</p>
+<code>
+$.hr.init(); //use defaults, no route
+
+$.hr.init({autoParse:false}); //disable automatic parsing
+
+</code>
+</div>
+<div class="whitebox">
+<h3 id="get">$.hr.get(variable)</h3>
+<p>Gets the current value of a variable, or the default value if it is not defined.</p>
+<code>
+//example.com/#!/studentID:444
+$.hr.get('studentID'); //444
+
+</code>
+</div>
+<div class="whitebox">
+<h3 id="set">$.hr.set(variable, value)</h3>
+<p>Sets the current value of a variable. Does NOT change the URL. This will temporarily override the value retrieved through get() until the next url change. To change the URL use <a href="#scrollTo:setUrl">setUrl()</a>.</p>
+<code>
+$.hr.set('studentID', '1234');
+$.hr.get('studentID'); //1234
+
+</code>
+</div>
+<div class="whitebox">
+<h3 id="remove">$.hr.remove(variable)</h3>
+<p>Removes the current value of a variable. Does NOT change the URL. This will temporarily override the value retrieved through get() until the next url change.</p>
+<code>
+$.hr.remove('studentID');
+
+</code>
+</div>
+<div class="whitebox">
+<h3 id="getDefault">$.hr.getDefault(variable)</h3>
+<p>Gets the default value of a variable.</p>
+<code>
+$.hr.getDefault('studentID');
+
+</code>
+</div>
+<div class="whitebox">
+<h3 id="setDefault">$.hr.setDefault(variable, value)</h3>
+<p>Sets the default value of a variable, this will be used when not specified in the url.</p>
+<code>
+$.hr.setDefault('page', 'view');
+
+//example.com/#!/
+$.hr.get('page'); //view
+
+//example.com/#!/page:edit
+$.hr.get('page'); //edit
+
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="removeDefault">$.hr.removeDefault(variable)</h3>
+<p>Deletes the the default value of a variable.</p>
+<code>
+$.hr.setDefault('page', 'view');
+$.hr.get('page'); //view
+
+$.hr.removeDefault('page');
+$.hr.get('page'); //undefined
+
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="getKeys">$.hr.getKeys()</h3>
+<p>Gets an array of all currently defined variable names including defaults.</p>
+<code>
+//example.com/#!/page:edit/id:44
+
+$.hr.getKeys(); // [page, id]
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="getAll">$.hr.getAll()</h3>
+<p>Gets an object of all currently defined variables including defaults.</p>
+<code>
+//example.com/#!/page:edit/id:44
+
+$.hr.getAll(); // {page:'edit', id:'44'}
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="setUrl">$.hr.setUrl(variable, value[, reset])</h3>
+<p>Updates a single variable in the url with a new value. Updating the URL will trigger any events bound to that variable.
+Optionally specify reset as a boolean to change url to only the supplied value.
+</p>
+<code>
+//example.com/#!/page:view/studentID:22
+
+$.hr.setUrl('studentID', 44);
+//example.com/#!/page:view/studentID:44
+
+$.hr.setUrl('page', 'list', true);
+//example.com/#!/page:list
+
+</code>
+<h3 id="setUrl">$.hr.setUrl(variables[, reset])</h3>
+<p>Sets multiple values in the url at the same time to new values. Updating the URL will trigger any events bound to those variables.
+Optionally specify reset as a boolean to change url to only the supplied values.
+</p>
+
+<code>
+//example.com/#!/page:view/studentID:22
+
+$.hr.setUrl({'studentID': 44, page: 'edit'});
+//example.com/#!/page:edit/studentID:44
+
+$.hr.setUrl({'page': 'list'}, true);
+//example.com/#!/page:list
+
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="trigger">$.hr.trigger(variable)</h3>
+<p>Execute all bound events associated with the given variable.
+Frequently used with default values when a page is first loaded to cause initial behavior.</p>
+<code>
+$.hr.init();
+$.hr.setDefault('page', 'list');
+$.hr.trigger('page');
+
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="triggerAll">$.hr.triggerAll()</h3>
+<p>Execute all bound events associated with variables currently in the url or default state.</p>
+<code>
+//example.com/#!/page:list/studentID:44
+$.hr.triggerAll();
+//triggers page and studentID events
+
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="bind">$.hr.bind()</h3>
+<p>Identical to <a href="#scrollTo:hr">$(element).hr()</a> except allows binding without a jquery dom selector.
+Interally events bound without a dom selector are bound to the document object.</p>
+<code>
+$.hr.bind('page', function(value){
+  //event code
+});
+
+</code>
+</div>
+
+<div class="whitebox">
+<h3 id="parseElement">$.hr.parseElement(element)</h3>
+<p>Parse all link tags in the element, converting them based on existing url values.</p>
+<code>
+$('#container').load('student.html', function(){
+  $.hr.parseElement('#container');
+});
+
+</code>
+
+<p>For details on link structure, read the <a href="##page:dynamicLinks">Dynamic Links</a> page.
+
+</div>
+
+<script>
+$(function() {
+  $.hr.trigger('scrollTo');
+});
+</script>

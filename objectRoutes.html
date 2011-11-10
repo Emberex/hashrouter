@@ -1,0 +1,72 @@
+<div class="whitebox">
+  <h2>Object Based Routes</h2>
+
+  <p>HashRouter takes advantage of javascript object notation for designing routes that are easier to read and write than a regular expression. (Ok, that's subjective but we think they are.)</p>
+
+  <p>Perhaps you are using HashRouter for a site on baking. You've got a number of variables that you want the url to manage.</p>
+
+  <div class="floatRightBox"><img src="img/cake.png"></div>
+  <ul>
+    <li><strong>recipeID</strong>: an integer in the database</li>
+    <li><strong>mode</strong>: list | edit | view</li>
+    <li><strong>sort</strong>: Grid sort column on the the list page.</li>
+    <li><strong>direction</strong>: Grid sort direction on the list page.</li>
+    <li><strong>pictures</strong>: Show pictures on the view page.</li>
+  </ul>
+
+  <p>Urls without routes would look like:</p>
+
+  <ul>
+    <li><strong>#!/mode:list</strong> The list of recipes.</li>
+    <li><strong>#!/mode:list/sort:date/direction:down</strong> The list of recipes sorted by date descending.</li>
+    <li><strong>#!/mode:view/recipeID:44</strong> View recipe 44.</li>
+    <li><strong>#!/mode:view/recipeID:44/pictures:show</strong> View recipe 44 with pictures.</li>
+    <li><strong>#!/mode:edit/recipeID:44</strong> Edit recipe 44.</li>
+  </ul>
+
+  <h3>Adding routes cleans them up considerably:</h3>
+  <ul>
+    <li><strong>#!/list</strong> The list of recipes.</li>
+    <li><strong>#!/list/date/down</strong> The list of recipes sorted by date descending.</li>
+    <li><strong>#!/view/44</strong> View recipe 44.</li>
+    <li><strong>#!/view/44/show</strong> View recipe 44 with pictures.</li>
+    <li><strong>#!/edit/44</strong> Edit recipe 44.</li>
+  </ul>
+
+  <p>Here is the route for this site:</p>
+
+<code>
+var routes = {
+  mode : {
+    list : {
+      sort : {
+        _ : {
+          direction : {}
+        }
+      }
+    },
+    edit : {
+      recipeID : {}
+    },
+    view : {
+      recipeID : {
+        _ : {
+          pictures : {}
+        }
+      }
+    }
+  }
+};
+</code>
+
+<p>The 'mode' variable is the first one in the url, and is therefore the root level item in our object. It has three possible values: list, edit, and view.
+When the route decoder finds a match it moves into that part of the object tree.</p>
+
+<p>The routes use an underscore _ to match any value. In this example, the sort column can be any value, and the next variable will still be direction.</p>
+
+<p>The decoder is smart enough to back up if it finds that your route contained variables it couldn't parse.
+ It will then continue down the route tree trying to find a match.</p>
+
+<p><a href="cake/">View this route in action.</a></p>
+
+</div>

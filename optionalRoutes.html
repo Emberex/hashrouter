@@ -1,0 +1,64 @@
+<div class="whitebox">
+	<h2>Routing Optional</h2>
+
+	<p>Routing lets you hide url variable names from the user. HashRouter doesn't require routing, so some, all, or no variables can be hidden.</p>
+
+	<p>Your href tags can also choose to use routes or not. Even if your site uses routes, you can choose to not use them in your links.
+	We've found this makes it easier to read the links when editing.
+	When specifying hrefs without routes, you can specify the links in any order, but routes have to be specified in route order.</p>
+
+	<p>These links all point at the same place, but are written with different amounts of routing.
+	HashRouter automatically updates the href after page load, so the link text shows the original href.
+	You can also use Firebug or some other network monitoring tool and look at the loaded html to see the original.</p>
+
+	<ul>
+		<li><a href="#rightCircle:1111cc/leftCircle:cc1111/centerCircle:11cc11">#rightCircle:1111cc/leftCircle:cc1111/centerCircle:11cc11</a></li>
+		<li><a href="#optionalRoutes/cc1111/rightCircle:1111cc/centerCircle:11cc11">#optionalRoutes/cc1111/rightCircle:1111cc/centerCircle:11cc11</a></li>
+		<li><a href="#optionalRoutes/cc1111/11cc11/rightCircle:1111cc">#optionalRoutes/cc1111/11cc11/rightCircle:1111cc"</a></li>
+	</ul>
+
+	<p>When writing links, you don't have to specify all of the values, only the one you want to update. Other values are automatically inserted
+	by HashRouter, including optional <a href="##page:defaults">default values</a>.</p>
+
+	<ul>
+		<li><a href="#leftCircle:[pageScripts.randomColor]">Change Left Only</a></li>
+		<li><a href="#centerCircle:[pageScripts.randomColor]">Change Center Only</a></li>
+		<li><a href="#rightCircle:[pageScripts.randomColor]">Change Right Only</a></li>
+	</ul>
+
+	<table class="dataTable">
+		<tr>
+			<th>Has Route</th>
+			<th>Has Route</th>
+			<th>No Route</th>
+		</tr>
+		<tr>
+			<td style="text-align:center"><div class="circle" id="leftCircle"></div></td>
+			<td style="text-align:center"><div class="circle" id="centerCircle"></div></td>
+			<td style="text-align:center"><div class="circle" id="rightCircle"></div></td>
+		</tr>
+	</table>
+</div>
+
+<script type="text/javascript">
+$('#leftCircle').hr('leftCircle', function(value){
+	$(this).css('background-color','#' + value);
+});
+
+$('#centerCircle').hr('centerCircle', function(value){
+	$(this).css('background-color','#' + value);
+});
+
+$('#rightCircle').hr('rightCircle', function(value){
+	$(this).css('background-color','#' + value);
+});
+
+$.hr.setDefault('leftCircle', '121212');
+$.hr.setDefault('centerCircle', '343434');
+$.hr.setDefault('rightCircle', '565656');
+$.hr.trigger('leftCircle');
+$.hr.trigger('centerCircle');
+$.hr.trigger('rightCircle');
+
+</script>
+

@@ -1,0 +1,68 @@
+<div class="whitebox">
+	<h2>Event Driven</h2>
+
+	<p>All event binding and triggering is done via jQuery events.
+	This prevents accidental triggers if the related dom element is no longer in scope.</p>
+
+	<p>Binding an event is very similar to the <a href="http://api.jquery.com/bind/">jquery bind</a> syntax. For example, this causes content
+	to be loaded dynamically via ajax when the page value in the url changes:</p>
+
+	<code>
+$('#pageContent').hr('page',function(value){
+	$(this).load(value + '.html');
+});
+	</code>
+
+	<p>You can bind multiple events to the same dom object, and they will be called whenever those values update.
+	You can also bind multiple events to the same function by putting them in an array. The function will only be called once when one or more of the values change.</p>
+
+<code>
+$('#pageContent').hr(['page', 'productID', 'pics'],
+	function(values){
+		var page = values.page;
+		var productID = values.productID;
+		var showPictures = values.pics;
+	}
+);
+
+</code>
+
+<p>Events are always called in route order which helps prevent unnecessary callbacks during page transitions. Suppose a user at this url:
+<code>http://example.com/#!/view/21/show</code>
+The user then navigates to the list view page:
+<code>http://example.com/#!/list</code>
+<p>If we have some code set up to toggle the pictures on and off based on the url, we don't want to hide the picture if the entire page is changing.</p>
+<code>
+//called first
+$('#pageContent').hr('page',function(value){
+	$(this).load(value + '.html');
+});
+
+//called second, as it is later in the url
+$('#pictureViewer').hr('pics', function(value){
+	if(value = 'show'){
+		$(this).show();
+	} else {
+		$(this).hide();
+	}
+});
+
+</code>
+<p>Fortunately jQuery event binding is smart enough not to call this event if the #pictureViewer is no longer in the dom.
+We need to do one more thing to make sure that this event is not called.
+The jQuery load event only replaces the HTML after it is loaded from the server,
+so we need to empty it out before returning from the page load function.
+</p>
+<code>
+$('#pageContent').hr('page',function(value){
+	$(this)<strong style="color:blue">.html('')</strong>.load(value + '.html');
+});
+
+</code>
+
+</div>
+
+<script type="text/javascript">
+
+</script>
+

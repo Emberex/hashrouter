@@ -1,0 +1,101 @@
+<div class="whitebox">
+  <h2>Dynamically Updating Links</h2>
+
+  <p>HashRouter automatically parses link tags in your document looking for hash tag links to convert
+  to the route structure. This allows for link tags to be specified in any order, or only for part of the page.</p>
+
+  <p>There are four ways to specify links:</p>
+
+  <ul>
+    <li><a href="#scrollTo:singleHash">Single Hash</a> - href="#variable:value/variable2:value2"</li>
+    <li><a href="#scrollTo:doubleHash">Double Hash</a> - href="##variable:value/variable2:value2"</li>
+    <li><a href="#scrollTo:withBang">With Bang</a> - href="#!variable:value/variable2:value2"</li>
+    <li><a href="#scrollTo:withCallback">With Callback</a> - href="#variable:[customCallback]"</li>
+  </ul>
+
+  <h3 id="singleHash">Single Hash</h3>
+
+  <p>The single hash tag is used to update a value in the URL without interfering with other URL values.
+  For example if the current url is:</p>
+  <code>http://example.com/#!/page:list/sort:student/direction:down</code>
+  <p>The user might click on 'student' column header to sort it a different direction. This can easily be specified with this anchor tag:
+  <code>&lt;a href="#direction:up"&gt;student&lt;/a&gt;</code>
+  <p>The <a href="##page:documentation/scrollTo:parseElement">automatic parser</a> will convert this link to the following url:</p>
+  <code>
+Without Routes:
+&lt;a href="#!/page:list/sort:student/direction:up"&gt;student&lt;/a&gt;
+
+With Routes:
+&lt;a href="#!/list/student/up"&gt;student&lt;/a&gt;
+  </code>
+  <p>You can list any number of variables to update in the link tag. You can <a href="##page:optionalRoutes">optionally use routes</a> to specify the links as well.
+  (But we recommend specifying the variable names for easy maintenance.)</p>
+
+  <p>When resetting the URL, HashRouter may use default values automatically to fill in gaps in the routing structure.</p>
+
+  <h3 id="doubleHash">Double Hash</h3>
+
+  <p>The double hash tag is used to update the entire url, removing any values not specified.
+  For example if the current url is:</p>
+  <code>http://example.com/#!/page:list/sort:student/direction:down</code>
+  <p>And the user wishes to navigate to a particular student, the sort column and direction won't be useful on the student page.
+  <code>&lt;a href="##page:view/studentID:44"&gt;view student 44&lt;/a&gt;</code>
+  <p>The <a href="##page:documentation/scrollTo:parseElement">automatic parser</a> will convert this link to the following url:</p>
+  <code>
+Without Routes:
+&lt;a href="#!/page:view/studentID:44"&gt;view student 44&lt;/a&gt;
+
+With Routes:
+&lt;a href="#!/view/44"&gt;view student 44&lt;/a&gt;
+  </code>
+
+  <h3 id="withBang">With Bang (Exclamation Point)</h3>
+
+  <p>Normally when a user clicks on a hash tag link that is identical to the current url the browser will not update the url, and therefore no bound events are called.
+  Sometimes it is desirable to cause events to trigger even if the url hasn't changed.
+  For example this site uses these type of links for scrolling to a particular location on the page. (This is accomplished with the <a href="http://flesler.blogspot.com/2007/10/jqueryscrollto.html">jQuery.scrollTo</a> plugin. )</p>
+
+  <p>You can choose to use a single or a double hash depending on the need for resetting other page variables.</p>
+
+  <p>Links specified with exclamation points are bound with a click event that causes the url to re-trigger. Don't worry, they still work properly for use with <a href="##page:tabs">tabbed browsing</a>.</p>
+
+  <p>The exclamation point must come after the one or two hash symbols.</p>
+
+  <code>
+&lt;a href="##!page:view/scrollTo:name"&gt;view student name&lt;/a&gt;
+&lt;a href="#!scrollTo:name"&gt;view student name&lt;/a&gt;
+  </code>
+
+  <h3 id="withCallback">With Callback</h3>
+
+  <p>To specify that a value should be dynamically generated every time that the url is parsed,
+   specify a callback function. This function must be in the global scope, or qualified by other members that are in the global scope.
+  </p>
+
+  <p>The callback function is supplied two arguments: the name of the variable, and the values of the other variables that have been
+  decoded in the link's url.</p>
+
+  <code>
+&lt;script&gt;
+utilities = {
+    dayOfWeek : function(variable, values) {
+        var dayNames = ["Sunday","Monday","Tuesday","Wednesday"
+            ,"Thursday","Friday","Saturday"];
+        return dayNames[(new Date).getDay()];
+    }
+}
+&lt;/script&gt;
+
+&lt;a href="#viewDay:[utilities.dayOfWeek]"&gt;view Today&lt;/a&gt;
+  </code>
+
+
+
+</div>
+
+<script>
+$(function() {
+  $.hr.trigger('scrollTo');
+});
+</script>
+

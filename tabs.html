@@ -1,0 +1,33 @@
+<div class="whitebox">
+	<h2>Tabbed Browsing Support</h2>
+
+	<p>
+	HashRouter links are regular links without the need to catch click events.
+	You can middle-click or however else you would normally open links in a new tab.
+	The current page won't change, and the new tab will have the expected content from the link.</p>
+
+	<p>Try it by changing the background color of this circle:</p>
+
+	<div class="floatRightBox">
+		<div class="circle" id="circle"></div>
+	</div>
+
+	<ul>
+		<li><a href="#circle:ff0000">red</a></li>
+		<li><a href="#circle:00ff00">green</a></li>
+		<li><a href="#circle:0000ff">blue</a></li>
+		<li><a href="#circle:[pageScripts.randomColor]">random</a>
+	</ul>
+
+	<p>Change it to whatever color you want by editing the url.</p>
+
+</div>
+
+<script type="text/javascript">
+$('#circle').hr('circle', function(value){
+	$(this).css('background-color','#' + value);
+});
+
+$.hr.setDefault('circle', 'bec3cf');
+$.hr.trigger('circle');
+</script>

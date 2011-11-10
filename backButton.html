@@ -1,0 +1,112 @@
+<div class="whitebox">
+	<h2>Back and Forward Buttons</h2>
+
+	<h3>The back button goes back.</h3>
+
+	<h3>The forward button goes forward.</h3>
+
+	<p>Simple with plain html. Complicated with dynamic applications. Until now.</p>
+
+	<p>HashRouter sites are built with this simple methodology:</p>
+
+	<ol>
+		<li>When users click something, only change the url.</li>
+		<li>When the url changes have page elements respond.</li>
+	</ol>
+
+	<p>As you build your site, intentionally keep your javascript code ignorant of what caused the url to change. It may have been a link,
+	the back button, or a bookmark but your code shouldn't know or care. Try it by sorting the table below and then clicking your back button a few times.</p>
+
+	<table id="sorterTable" class="dataTable">
+		<tr>
+		<th><a href="#sort:Student/direction:[backButton.getDirection]">Student</a></th>
+		<th><a href="#sort:Fruit/direction:[backButton.getDirection]">Fruit</a></th>
+		<th><a href="#sort:Age/direction:[backButton.getDirection]">Age</a></th>
+		</tr>
+		<tr>
+			<td>Adam</td>
+			<td>Apple</td>
+			<td>17</td>
+		</tr>
+		<tr>
+			<td>Tim</td>
+			<td>Banana</td>
+			<td>44</td>
+		</tr>
+		<tr>
+			<td>John</td>
+			<td>Kiwi</td>
+			<td>14</td>
+		</tr>
+		<tr>
+			<td>Sally</td>
+			<td>Avacado</td>
+			<td>32</td>
+		</tr>
+		<tr>
+			<td>Jeff</td>
+			<td>Strawberry</td>
+			<td>28</td>
+		</tr>
+	</table>
+</div>
+
+<script type="text/javascript">
+backButton = {
+	//all functions referenced in ULRs must be global scope qualified, but can be nested as this one is.
+	getDirection : function(variable, otherVariables){
+		if($.hr.get('sort') == otherVariables['sort']
+			&& $.hr.get('direction') == 'up'){
+			return "down";
+		}
+		return "up";
+	}
+}
+
+//this does the work of watching for the sort column or direction to change
+//it will be called (only once) when either or both values change
+$('#sorterTable').hr(['sort', 'direction'], function(values){
+	if(values.sort && values.direction) {
+		$('th', this).removeClass('selected up down');
+		var header = $('th:contains(' + values.sort + '):first',this);
+		header.addClass('selected').addClass(values.direction);
+		var header = header[0];
+		var cellIndex = header.cellIndex;
+
+		$('tr:gt(0)', this).sortElements(function(a, b){
+			var valA = $('td:eq(' + cellIndex + ')', a);
+			var valB = $('td:eq(' + cellIndex + ')', b);
+		    return (valA.text() > valB.text() ? 1 : -1) * (values.direction == 'up' ? 1 : -1);
+		});
+	}
+});
+
+//http://james.padolsey.com/javascript/sorting-elements-with-jquery/
+jQuery.fn.sortElements = (function(){
+    var sort = [].sort;
+    return function(comparator, getSortable) {
+        getSortable = getSortable || function(){return this;};
+        var placements = this.map(function(){
+            var sortElement = getSortable.call(this),
+                parentNode = sortElement.parentNode,
+                nextSibling = parentNode.insertBefore(
+                    document.createTextNode(''),
+                    sortElement.nextSibling
+                );
+            return function() {
+                parentNode.insertBefore(this, nextSibling);
+                parentNode.removeChild(nextSibling);
+            };
+        });
+        return sort.call(this, comparator).each(function(i){
+            placements[i].call(getSortable.call(this));
+        });
+    };
+})();
+
+//this sets the default sort and direction so that the page is sorted when it first loads.
+$.hr.setDefault('sort', 'Student');
+$.hr.setDefault('direction', 'down');
+$.hr.trigger('sort');
+</script>
+

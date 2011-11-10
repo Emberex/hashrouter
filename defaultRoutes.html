@@ -1,0 +1,39 @@
+<div class="whitebox">
+	<h2>Default Route Values</h2>
+
+	<p>Most web-apps have a default values for things when the page first loads. The routing system needs to be aware of these default values
+	in case other values change that are later on in the routing url.</p>
+
+	<p>For example a book store might have a list page to present to a user, and you might have a grid that is sorted by book title by default. Without defaults this might look like:</p>
+
+	<code>
+http://example.com/#!/list/title/down
+	</code>
+
+	<p>We can specify default values for these variables in the code:</p>
+
+	<code>
+$.hr.setDefault('page', 'list');
+$.hr.setDefault('sort', 'title');
+$.hr.setDefault('direction', 'down');
+	</code>
+
+	<p>When a user first loads the page these values will be used only if they aren't specified in the url.</p>
+
+	<code>
+http://example.com/
+	</code>
+
+	<p>When a user clicks the 'title' column to sort it in the other direction, the routing system fills in the other default values:</p>
+
+	<code>
+http://example.com/#!/list/title/up
+	</code>
+
+	<p>You can try it on the <a href="##page:optionalRoutes">optional routes</a> page which uses default values for the circle colors. As you hover over the bottom three links note the length of the URL increases as default values are filled in.</p>
+
+</div>
+
+<script type="text/javascript">
+</script>
+
