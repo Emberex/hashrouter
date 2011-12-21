@@ -7,10 +7,11 @@
   <p>There are four ways to specify links:</p>
 
   <ul>
-    <li><a href="#scrollTo:singleHash">Single Hash</a> - href="#variable:value/variable2:value2"</li>
-    <li><a href="#scrollTo:doubleHash">Double Hash</a> - href="##variable:value/variable2:value2"</li>
-    <li><a href="#scrollTo:withBang">With Bang</a> - href="#!variable:value/variable2:value2"</li>
-    <li><a href="#scrollTo:withCallback">With Callback</a> - href="#variable:[customCallback]"</li>
+    <li><a href="#scrollTo:singleHash">Single Hash</a> - href="#variable:value/variable2:value2" - set</li>
+    <li><a href="#scrollTo:doubleHash">Double Hash</a> - href="##variable:value/variable2:value2" - override</li>
+    <li><a href="#scrollTo:withBang">With Bang</a> - href="#!variable:value/variable2:value2" - refresh</li>
+    <li><a href="#scrollTo:withCallback">With Callback</a> - href="#variable:[customCallback]" - dynamic</li>
+    <li><a href="#scrollTo:keepingVariable">Keep a Variable</a> - href="#variable:[]" - keep</li>
   </ul>
 
   <h3 id="singleHash">Single Hash</h3>
@@ -88,6 +89,13 @@ utilities = {
 
 &lt;a href="#viewDay:[utilities.dayOfWeek]"&gt;view Today&lt;/a&gt;
   </code>
+
+<h3 id="withCallback">Keep a Variable</h3>
+<p>To keep some variables the same when overriding, use empty brackets [] and the double pound sign.
+For example you may have a classroom selected and need to add a student to it:</p>
+<code>
+&lt;a href="#action:addStudent/classroomId:[]"&gt;Add a student&lt;/a&gt;
+</code>
 
 
 
