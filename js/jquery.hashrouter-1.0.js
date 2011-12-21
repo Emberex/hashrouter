@@ -366,6 +366,9 @@
 
           var _evaluateValue = function(variable, value, decoded){
             value = value.replace(/\[(.*)\]/g, function(string, functionName) {
+              if(functionName == ''){
+            	  return $.hr.get(variable);
+              }
               var namespaces = functionName.split(".");
               var func = namespaces.pop();
               var context = window;
