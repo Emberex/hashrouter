@@ -32,8 +32,9 @@ $('#selector').hr('variable', function(value, variable) {
 
 <p>Every Variable - Called every time any variable is updated</p>
 <code>
-$('#selector').hr('_', function(value, variable) {
-  //event code
+$('#selector').hr('_', function(values, name) {
+  //value
+  //key
 });
 
 </code>
@@ -45,7 +46,6 @@ $('#selector').hr(['var1', 'var2'], function(values, name) {
 //values - A hash of all values declared in the event
 //name - The value that changed, others may have changed
 });
-
 </code>
 
 <p>Every Variable Exclusive - Only called once per request cycle</p>
@@ -54,7 +54,15 @@ $('#selector').hr(['_'], function(values, name) {
 //values - A hash of all values declared in the event
 //name - The value that changed, others may have changed
 });
+</code>
 
+<p>Restrict Variable Values</p>
+<code>
+$('#selector').hr({page:['index','details']},
+         function(value, name) {
+    //value - will be index or details
+    //name - The value that changed
+});
 </code>
 </div>
 

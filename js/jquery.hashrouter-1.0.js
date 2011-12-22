@@ -39,8 +39,8 @@
           var _defaultState = {};
           var _ignoreNextUpdate = false;
           var _triggerQueue = [];
-            var _groupEvents = [];
-            var _unique = 0;
+          var _bindings = {};
+          var _unique = 0;
 
           this.init = function(options){
             this.options = $.extend({}, this.defaultOptions, options);
@@ -100,8 +100,7 @@
               }
               return ret;
             };
-
-                       //variables, reset
+                                 //variables, [value], reset
             this.setUrl = function(variable, value, reset){
               var update = {};
               if(typeof variable === 'object'){
@@ -141,35 +140,65 @@
                     key = dom;
                     dom = document;
                 }
-                if(typeof callback === 'function') {
-                    var element = $(dom);
-                    var eventName = '';
-                    if(element.length == 0) {
-                      $.hr.options.errorLogging && console.error('unknown dom element in bind ' + dom);
-                        return;
-                    }
-                    if(key instanceof Array) {
-                        eventName = 'hr_' + (_unique++);
-                        _groupEvents.push({keys: key, callback: callback, eventName: eventName});
-                    } else {
-                        eventName = 'hr_' + key;
-                    }
-
-                    element.bind(eventName, function(event, value, key) {
-                        callback.call(element, value, key); //for group events, value is an object of pairs
-                    });
-                } else {
-                  $.hr.options.errorLogging && console.error('non-function declared in bind.')
+                if(typeof callback !== 'function') {
+                    $.hr.options.errorLogging && console.error('non-function declared in bind.');
+                    return;
                 }
+                var element = $(dom);
+                if(element.length == 0) {
+                    $.hr.options.errorLogging && console.error('unknown dom element in bind ' + dom);
+                    return;
+                }
+                var eventName = 'hr_' + (_unique++);
+                var key = _normalizeKey(key);
+                _bindings[eventName] = {keys: key, callback: callback, eventName: eventName};
+                element.bind(eventName, function(event, value, key) {
+                    callback.call(element, value, key); //for group events, value is an object of pairs
+                });
             };
 
             this.parseElement = function(element) {
-              if(!element || element.length == 0){
-                element = $(document);
-              }
+                if(!element || element.length == 0){
+                    element = $(document);
+                }
                 $('a', element).each(function(index, value) {
                     _parseHref(value);
                 });
+            };
+
+          //turns all keys into an object of keys and matching values an array
+          //{key:[], key2:['value1','value2']}
+            var _normalizeKey = function(key){
+                if(key instanceof Array){ //['key', 'key2', 'key3']
+                    var ret = {};
+                    if(key.length == 1 && key[0] == '_'){
+                        return ret; //supports older method of specifying catch-all
+                    }
+                    for(var i=0;i<key.length;i++){
+                        ret[key[i]] = [];
+                    }
+                    return ret;
+                }
+                if(typeof key === 'string'){ //'key'
+                    var ret = {};
+                    ret[key] = [];
+                    return ret;
+                }
+                if(typeof key === 'object') {
+                    for(var k in key){
+                        var values = key[k];
+                        if(typeof values === 'string' || typeof values === 'number'){ //{key:'value', key2:'value'}
+                            key[k] == [values];
+                        }
+                        values = key[k];
+                        for(var i=0;i<values.length;i++){
+                            if(values[i] !== null && values[i] !== undefined) {
+                                values[i] = values[i].toString();
+                            }
+                        }
+                    }
+                }
+                return key;
             };
 
             var _parseHref = function(link) {
@@ -236,16 +265,17 @@
                 //spinning this off into a separate function in case the queue gets updated during the call
                 var process = (function(queue) {
                     return function() {
-                        for(var i = 0; i < _groupEvents.length; i++) {
-                            var event = _groupEvents[i];
-                            event.called = false;
-                        }
+                        //reset all bindings to uncalled
+                      for(var eventName in _bindings) {
+                        var event = _bindings[eventName];
+                          event.called = false;
+                      }
 
-                        while(queue.length > 0) {
-                            var trigger = queue.shift();
-                            var value = $.hr.get(trigger);
-                            _trigger(trigger, value);
-                        }
+                      while(queue.length > 0) {
+                        var trigger = queue.shift();
+                        var value = $.hr.get(trigger);
+                        _trigger(trigger, value);
+                      }
                     };
                 })(_triggerQueue);
 
@@ -253,25 +283,46 @@
                 process();
             };
 
+            var _canCallEvent = function(eventObj){
+              if(eventObj.called)
+                  return false;
+              for(var eventKey in eventObj.keys){
+                var validVals = eventObj.keys[eventKey];
+                var value = $.hr.get(eventKey);
+                if(validVals.length > 0 && $.inArray(value, validVals) == -1){
+                    console.log('returning false', validVals, value)
+                  return false;
+                }
+              }
+              return true;
+            }
+
             var _trigger = function(key, value) {
-                for(var i = 0; i < _groupEvents.length; i++) {
-                    var event = _groupEvents[i];
-                    if($.inArray(key, event.keys) > -1 ||
-                      (event.keys.length && event.keys[0] == '_')) {
-                      //underscore catches all events
-                        if(!event.called) {
-                          var values = {};
-                          for(var j = 0; j < event.keys.length; j++){
-                            values[event.keys[j]] = $.hr.get(event.keys[j]);
-                          }
-                          $.event.trigger(event.eventName, [values, key]);
-                            event.called = true; //only call it once
+                for(var eventName in _bindings) {
+                    var event = _bindings[eventName];
+                    //{key:[], key2:['value1','value2']}
+                    if((key in event.keys || $.isEmptyObject(event.keys))
+                            && _canCallEvent(event, value)){
+                        //empty object is used to catch all events
+                        var values = {};
+                        var first = undefined;
+                        for(var k in event.keys){
+                            if(first == undefined){
+                                first = k;
+                            }
+                            values[k] = $.hr.get(k);
                         }
+
+                        if(first == undefined){
+                            values = $.hr.getAll();
+                        } else if(first == k){ //only one value
+                            values = values[first];
+                        }
+                        $.event.trigger(event.eventName, [values, key]);
+                        event.called = true; //only call it once
                     }
                 }
-
-                $.event.trigger('hr_' + key, [value, key]);
-                $.event.trigger('hr__', [value, key]); //catch all callback
+                $.event.trigger('hr__', value, key);
             };
 
             var _routeEncode = function(items, routes) {
@@ -367,7 +418,7 @@
           var _evaluateValue = function(variable, value, decoded){
             value = value.replace(/\[(.*)\]/g, function(string, functionName) {
               if(functionName == ''){
-            	  return $.hr.get(variable);
+                return $.hr.get(variable);
               }
               var namespaces = functionName.split(".");
               var func = namespaces.pop();

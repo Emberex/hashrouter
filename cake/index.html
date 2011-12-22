@@ -32,15 +32,19 @@
             }
           }
         };
-      $.hr.init({routes:routes});
-      $('#variables').hr(['_'], function(){
-        var values = $.hr.getAll();
+      $.hr.init({routes:routes, errorLogging:true});
+      $('#variables').hr({}, function(values){
         $(this).html('');
         for(var k in values){
           $(this).append(k + ':' + values[k] + '\n');
         }
-
       });
+
+      $('#variables').hr({color:['red', 'blue'],number:[]}, function(values){
+          alert(values.color); //red, blue
+          alert(values.number); //1,2,3
+        });
+
       $.hr.triggerAll();
     });
   </script>
