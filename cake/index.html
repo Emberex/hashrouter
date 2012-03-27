@@ -40,13 +40,11 @@
         }
       });
 
-      $('#variables').hr({color:['red', 'blue'],number:[]}, function(values){
-          alert(values.color); //red, blue
-          alert(values.number); //1,2,3
-        });
-
       $.hr.triggerAll();
     });
+    window.getRandomID = function(){
+        return Math.floor(Math.random(0, 1000) * 1000);
+    }
   </script>
   <div class="header">
     <div class="centering">
@@ -62,13 +60,15 @@
     </div>
   </div>
   <div class="content" id="mainContent">
-    <div class="whitebox">
+    <div class="whitebox" style="font-family:monospace;font-size:16px">
       <ul>
-        <li><a href="##mode:list">#mode:list</a></li>
-        <li><a href="##mode:list/sort:date/direction:down">#mode:list/sort:date/direction:down</a></li>
-        <li><a href="##mode:view/recipeID:44">#mode:view/recipeID:44</a></li>
-        <li><a href="##mode:view/recipeID:44/pictures:show">#mode:view/recipeID:44/pictures:show</a></li>
-        <li><a href="##mode:edit/recipeID:44">#mode:edit/recipeID:44</a></li>
+        <li><a href="##mode:list">##mode:list</a></li>
+        <li><a href="##mode:list/sort:date/direction:down">##mode:list/sort:date/direction:down</a></li>
+        <li><a href="##mode:view/recipeID:44">##mode:view/recipeID:44</a></li>
+        <li><a href="##mode:view/recipeID:44/pictures:show">##mode:view/recipeID:44/pictures:show</a></li>
+        <li><a href="##mode:edit/recipeID:44">##mode:edit/recipeID:44</a></li>
+        <li><a href="##mode:[]/recipeID:[getRandomID]">##mode:[]/recipieID:[getRandomID]</a></li>
+        <li><a href="#mode:list/recipeID:[null]">#mode:list/recipeID:[null]</a></li>
       </ul>
     </div>
 

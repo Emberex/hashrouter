@@ -15,6 +15,7 @@
     <ul>
     <li><a href="#scrollTo:withCallback">[function] - Dynamic Variable</a> variable:[customCallback]</li>
     <li><a href="#scrollTo:keepVariable">[] - Keep a Variable</a> variable:[]</li>
+    <li><a href="#scrollTo:removeVariable">[null] - Remove a Variable</a> variable:[null]</li>
   </ul>
 
   <h3 id="singleHash">Single Hash - Set a Variable</h3>
@@ -81,7 +82,7 @@ With Routes:
 
   <code>
 &lt;script&gt;
-utilities = {
+window.utilities = {
     dayOfWeek : function(variable, values) {
         var dayNames = ["Sunday","Monday","Tuesday","Wednesday"
             ,"Thursday","Friday","Saturday"];
@@ -97,10 +98,15 @@ utilities = {
 <p>To keep some variables the same when overriding, use empty brackets [] and the double pound sign.
 For example you may have a classroom selected and need to add a student to it:</p>
 <code>
-&lt;a href="#action:addStudent/classroomId:[]"&gt;Add a student&lt;/a&gt;
+&lt;a href="##action:addStudent/classroomId:[]"&gt;Add a student&lt;/a&gt;
 </code>
 
-
+<h3 id="removeVariable">Remove a Variable</h3>
+<p>To remove only one variable and keep the rest exactly the same, use: [null] and a single pound.
+For example, if you have a dialog window and want to close the window but not change the rest of the page:</p>
+<code>
+&lt;a href="#dialog:[null]"&gt;Close Dialog&lt;/a&gt;
+</code>
 
 </div>
 

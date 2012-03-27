@@ -27,28 +27,30 @@
 (function($){
     if(!$.hr){
         $.hr = new function(){
-          this.options = {};
-          this.defaultOptions = {
-              searchEngineFriendly : true,
-              errorLogging : false,
-              autoParse : true,
-              routes : {}
-          };
+            this.options = {};
+            this.defaultOptions = {
+                  searchEngineFriendly : true,
+                  errorLogging : false,
+                  autoParse : true,
+                  routes : {}
+            };
 
-          var _state = {};
-          var _defaultState = {};
-          var _ignoreNextUpdate = false;
-          var _triggerQueue = [];
-          var _bindings = {};
-          var _unique = 0;
+            var _state, _defaultState, _ignoreNextUpdate,
+              _triggerQueue, _bindings, _unique;
 
-          this.init = function(options){
-            this.options = $.extend({}, this.defaultOptions, options);
+            this.init = function(options){
+                this.options = $.extend({}, this.defaultOptions, options);
+                _state = {};
+                _defaultState = {};
+                _ignoreNextUpdate = false;
+                _triggerQueue = [];
+                _bindings = {};
+                _unique = 0;
                 $.history.init(function(hash) {
                     _hashUpdated(hash);
                 }, {unescape:"/;:"});
                 $.hr.parseElement($(document));
-          };
+            };
 
             this.get = function(variable) {
                 if(variable in _state)
@@ -102,13 +104,13 @@
             };
                                  //variables, [value], reset
             this.setUrl = function(variable, value, reset){
-              var update = {};
-              if(typeof variable === 'object'){
-                reset = value;
-                update = variable;
-              } else {
-                update[variable] = value;
-              }
+                var update = {};
+                if(typeof variable === 'object'){
+                    reset = value;
+                    update = variable;
+                } else {
+                    update[variable] = value;
+                }
 
                 if(!reset) {
                     update = $.extend({}, _state, update);
@@ -253,6 +255,7 @@
                         }
                     });
                 }
+
                 link.attr('href', hashLess + '#' + encodedState);
             };
 
@@ -351,6 +354,11 @@
 
          var _encode = function(items) {
               var items = $.extend({}, items);
+              for(var key in items){
+                  if(items[key] === null){
+                      delete items[key];
+                  }
+              }
               var encoded = '';
               if($.hr.options.searchEngineFriendly){
                 encoded += "!";
@@ -380,10 +388,10 @@
                       if(values.length == 1) { //using route
                           var value = values[0];
                           if(route && value in route) {
-                              decoded[key] = _evaluateValue(key, value, decoded);
+                              _evaluateValue(key, value, decoded);
                               routes = route[value];
                           }else if(route && ('_' in route || $.isEmptyObject(route))) { //default route
-                            decoded[key] = _evaluateValue(key, value, decoded);
+                              _evaluateValue(key, value, decoded);
                               routes = route['_'];
                           }else {
                               //using wrong route, unshift item, back out the stack,
@@ -396,7 +404,7 @@
                       else if(values.length == 2) { //not using route
                           var variable = values[0];
                           var value = values[1];
-                          decoded[variable] = _evaluateValue(variable, value, decoded);
+                          _evaluateValue(variable, value, decoded);
                       } else {
                         $.hr.options.errorLogging && console.log('invalid url, current items: ' + items);
                       }
@@ -407,7 +415,7 @@
           var _decode = function(str) {
               var decoded = {};
               while(str.length && str.charAt(0) == '!' || str.charAt(0) == '/'){
-                str = str.substring(1);
+                  str = str.substring(1);
               }
               var items = str.split('/');
               var routes = $.extend({}, $.hr.options.routes);
@@ -416,27 +424,43 @@
           };
 
           var _evaluateValue = function(variable, value, decoded){
-            value = value.replace(/\[(.*)\]/g, function(string, functionName) {
-              if(functionName == ''){
-                return $.hr.get(variable);
+              try {
+                  var value = value.replace(/\[(.*)\]/g, function(string, functionName) {
+                      if(functionName === ''){
+                          var val = $.hr.get(variable);
+                          if(val === undefined){
+                          //value.replace always returns a string so we do this to get at the undefined value type
+                              throw 'null';
+                          }
+                          return val;
+                      }
+                      if(functionName === 'null'){
+                          throw 'null';
+                      }
+                      var namespaces = functionName.split(".");
+                      var func = namespaces.pop();
+                      var context = window;
+                      for(var i = 0; i < namespaces.length; i++) {
+                          if(namespaces[i] in context){
+                              context = context[namespaces[i]];
+                          } else {
+                              break;
+                          }
+                      }
+                      var fn = context[func];
+                      if(typeof fn === 'function'){
+                          return fn(variable, decoded);
+                      }
+                      return "";
+                  });
+                  decoded[variable] = value;
+              } catch(exception) {
+                  if(exception == 'null') {
+                      decoded[variable] = null;
+                  } else {
+                      throw exception;
+                  }
               }
-              var namespaces = functionName.split(".");
-              var func = namespaces.pop();
-              var context = window;
-              for(var i = 0; i < namespaces.length; i++) {
-                if(namespaces[i] in context){
-                  context = context[namespaces[i]];
-                } else {
-                  break;
-                }
-              }
-              var fn = context[func];
-              if(typeof fn === 'function'){
-                return fn(variable, decoded);
-              }
-                return "";
-            });
-            return value;
           };
 
           var _hashUpdated = function(state) {
@@ -478,7 +502,7 @@
                 _ignoreNextUpdate = false;
 
                 if($.hr.options.autoParse) {
-                  $.hr.parseElement($(document));
+                    $.hr.parseElement($(document));
                 }
             };
 
