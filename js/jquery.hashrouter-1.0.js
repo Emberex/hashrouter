@@ -189,8 +189,8 @@
                 if(typeof key === 'object') {
                     for(var k in key){
                         var values = key[k];
-                        if(typeof values === 'string' || typeof values === 'number'){ //{key:'value', key2:'value'}
-                            key[k] == [values];
+                        if(typeof values === 'string' || typeof values === 'number') { //{key:'value', key2:'value'}
+                            key[k] = [values];
                         }
                         values = key[k];
                         for(var i=0;i<values.length;i++){
@@ -293,7 +293,6 @@
                 var validVals = eventObj.keys[eventKey];
                 var value = $.hr.get(eventKey);
                 if(validVals.length > 0 && $.inArray(value, validVals) == -1){
-                    console.log('returning false', validVals, value)
                   return false;
                 }
               }
