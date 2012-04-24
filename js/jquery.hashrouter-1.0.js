@@ -35,12 +35,13 @@
                   routes : {}
             };
 
-            var _state, _defaultState, _ignoreNextUpdate,
+            var _state, _defaultState, _overrideState, _ignoreNextUpdate,
               _triggerQueue, _bindings, _unique;
 
             this.init = function(options){
                 this.options = $.extend({}, this.defaultOptions, options);
                 _state = {};
+                _overrideState = {};
                 _defaultState = {};
                 _ignoreNextUpdate = false;
                 _triggerQueue = [];
@@ -53,6 +54,8 @@
             };
 
             this.get = function(variable) {
+                if(variable in _overrideState)
+                    return _overrideState[variable];
                 if(variable in _state)
                     return _state[variable];
                 return _defaultState[variable];
@@ -61,6 +64,18 @@
             this.set = function(variable, value) {
               _state[variable] = value;
               return this;
+            };
+
+            this.setOverride = function(variable, value) {
+                _overrideState[variable] = value;
+            };
+
+            this.getOverride = function(variable) {
+                return _overrideState[variable];
+            };
+
+            this.removeOverride = function(variable){
+                delete _overrideState[variable];
             };
 
             this.remove = function(variable){

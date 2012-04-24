@@ -31,6 +31,49 @@ test("can change the url to an object of keys and values", function(){
     ok(true);
 });
 
+
+test("default values return correctly", function(){
+    testSetup();
+    $.hr.setDefault('hats', 5);
+    equal($.hr.get('hats'), 5);
+});
+
+test("default value replaced with standard", function(){
+    testSetup();
+    $.hr.setDefault('hats', 5);
+    $.hr.set('hats', 6);
+    equal($.hr.get('hats'), 6);
+});
+
+test("default value in use after standard deleted", function(){
+    testSetup();
+    $.hr.setDefault('hats', 5);
+    $.hr.set('hats', 6);
+    equal($.hr.get('hats'), 6);
+    $.hr.remove('hats');
+    equal($.hr.get('hats'), 5);
+});
+
+test("standard values can be overridden", function(){
+    testSetup();
+    $.hr.set('hats', 5);
+    equal($.hr.get('hats'), 5);
+    $.hr.setOverride('hats', 6);
+    equal($.hr.get('hats'), 6);
+});
+
+test("override can be removed", function(){
+    testSetup();
+    $.hr.set('hats', 5);
+    equal($.hr.get('hats'), 5);
+
+    $.hr.setOverride('hats', 6);
+    equal($.hr.get('hats'), 6);
+
+    $.hr.removeOverride('hats');
+    equal($.hr.get('hats'), 5);
+});
+
 asyncTest("called back for a value changing", function(){
     testSetup();
     $.hr.bind('a1', function(value){
