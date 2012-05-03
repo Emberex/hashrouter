@@ -78,6 +78,10 @@
                 delete _overrideState[variable];
             };
 
+            this.resetOverride = function(){
+                _overrideState = {};
+            };
+
             this.remove = function(variable){
               delete _state[variable];
               return this;
@@ -222,11 +226,14 @@
                 link = $(link);
                 var href = link.attr('href');
 
+                if(!href || href.length === 0)
+                    return;
+
                 var hashLess = href.substring(0, href.indexOf('#'));
                 href = href.substring(href.indexOf('#'));
 
 
-                if(!href || href.length == 0 || href.charAt(0) != '#')
+                if(!href || href.length === 0 || href.charAt(0) != '#')
                     return;
 
                 var sourceHref = link.data('sourceHref');
