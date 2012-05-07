@@ -118,8 +118,108 @@ asyncTest("not called back for object values not equal to specified value", func
     }, 1000);
 });
 
+asyncTest("trigger queue called in route order", function() {
+    testSetup();
+    $.hr.init({
+        routes : {
+            directory : {
+                _ : {
+                    page : {
 
+                    }
 
+                }
+
+            }
+        }
+    });
+
+    var calledDirectory = false;
+    $.hr.bind('directory', function(){
+        calledDirectory = true;
+    });
+    $.hr.bind('page', function(){
+        equal(true, calledDirectory);
+        ok(true);
+        start();
+    });
+    $.hr.set('directory', 'a');
+    $.hr.set('page', 'b');
+    $.hr.triggerAll();
+});
+
+asyncTest("non-route variables called after route variables", function() {
+    testSetup();
+    $.hr.init({
+        routes : {
+            directory : {
+                _ : {
+                    page : {
+
+                    },
+                    _ : { }
+
+                }
+
+            }
+        }
+    });
+
+    var calledDirectory = false;
+    var calledId = false;
+    $.hr.bind(['directory', 'page'], function(){
+         equal(false, calledId);
+         ok(true);
+         start();
+    });
+    $.hr.bind('id', function(){
+        calledId = true;
+    });
+    $.hr.set('apple', '1');
+    $.hr.set('directory', 'a');
+    $.hr.set('id', '1');
+    $.hr.set('banana', '1');
+    $.hr.triggerAll();
+});
+
+asyncTest("complicated routes trigger in correct order", function() {
+    testSetup();
+    $.hr.init({
+        routes : {
+            directory : {
+                'page_first' : {
+                    page : { _ : { id : {} } }
+                },
+                'id_first' : {
+                    id : { _ : { page: {} } }
+                }
+            }
+        }
+    });
+
+    var calledPage = false;
+    var calledId = false;
+    var calledDirectory = false;
+    $.hr.bind('directory', function(){
+        calledDirectory = true;
+    });
+    $.hr.bind('page', function(){
+        calledPage = true;
+        //this function should be called last, as we are in 'id_first' mode
+        equal(true, calledDirectory);
+        equal(true, calledId);
+        ok(true);
+        start();
+    });
+    $.hr.bind('id', function(){
+        calledId = true;
+    });
+
+    $.hr.set('directory', 'id_first');
+    $.hr.set('page', 'a');
+    $.hr.set('id', '1');
+    $.hr.triggerAll();
+});
 
 
 

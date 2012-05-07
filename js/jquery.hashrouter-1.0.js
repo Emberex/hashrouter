@@ -530,25 +530,29 @@
             var _orderTriggerQueue = function() {
                 var ordered = [];
 
-                var rCopy = $.extend({}, this.routes);
+                var rCopy = $.extend({}, $.hr.options.routes);
                 var orderRoutes = function(routes) {
                     for(var key in routes) {
                         var value = $.hr.get(key);
                         if(value) {
-                            var index = _triggerQueue.indexOf(key);
-                            if(index > -1) {
-                                ordered.push(key);
-                                Array.remove(_triggerQueue, index);
-                            }
-
                             var route = routes[key];
                             if(value in route) {
                                 routes = route[value];
-                            }else if('_' in route) { //default route
+                            }else if('_' in route || $.isEmptyObject(route)) { //default route
                                 routes = route['_'];
                             }else {
                                 return;
                             }
+
+                            var index = _triggerQueue.indexOf(key);
+                            if(index > -1) {
+                                ordered.push(key);
+                                console.log('removing', index, key, _triggerQueue);
+                                _triggerQueue.splice(index, 1);
+
+                                console.log('removed', _triggerQueue);
+                            }
+
                             return orderRoutes(routes);
                         }
                     }
@@ -556,6 +560,7 @@
                 };
                 orderRoutes(rCopy);
                 while(_triggerQueue.length > 0) {
+                    console.log('pushing', _triggerQueue[0]);
                     ordered.push(_triggerQueue.shift());
                 }
                 _triggerQueue = ordered;
