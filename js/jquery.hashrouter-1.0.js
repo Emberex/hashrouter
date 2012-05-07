@@ -547,10 +547,7 @@
                             var index = _triggerQueue.indexOf(key);
                             if(index > -1) {
                                 ordered.push(key);
-                                console.log('removing', index, key, _triggerQueue);
                                 _triggerQueue.splice(index, 1);
-
-                                console.log('removed', _triggerQueue);
                             }
 
                             return orderRoutes(routes);
@@ -560,7 +557,6 @@
                 };
                 orderRoutes(rCopy);
                 while(_triggerQueue.length > 0) {
-                    console.log('pushing', _triggerQueue[0]);
                     ordered.push(_triggerQueue.shift());
                 }
                 _triggerQueue = ordered;
