@@ -4,7 +4,7 @@
     <meta charset='utf-8'>
     <title>HashRouter - hr - jQuery Plugin</title>
     <script src="js/jquery-1.6.4.min.js" type="text/javascript"></script>
-    <script src="js/jquery.history.js" type="text/javascript"></script>
+    <script src="js/jquery.ba-hashchange.min.js" type="text/javascript"></script>
     <script src="js/jquery.hashrouter-1.0.js" type="text/javascript"></script>
     <script src="js/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="js/jquery.scrollTo-1.4.2.js"></script>
@@ -27,7 +27,6 @@
         _ : {}
         }
       };
-
       $.hr.init({routes:routes});
       $.hr.setDefault('page','default');
       $('#mainContent').hr('page', function(value){

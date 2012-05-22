@@ -23,7 +23,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 (function($){
     if(!$.hr){
         $.hr = new function(){
@@ -47,9 +46,11 @@
                 _triggerQueue = [];
                 _bindings = {};
                 _unique = 0;
-                $.history.init(function(hash) {
-                    _hashUpdated(hash);
-                }, {unescape:"/;:"});
+                $(window).hashchange(function() {
+                    var h = location.hash;
+                    console.log(h);
+                    _hashUpdated(h);
+                });
                 $.hr.parseElement($(document));
             };
 
@@ -136,7 +137,7 @@
                 }
 
                 var encoded = _encode(update);
-                $.history.load(encoded);
+                window.location.hash = encoded;
             }
 
             this.trigger = function(variable) {
@@ -435,7 +436,7 @@
 
           var _decode = function(str) {
               var decoded = {};
-              while(str.length && str.charAt(0) == '!' || str.charAt(0) == '/'){
+              while(str.length && str.charAt(0) === '!' || str.charAt(0) === '/' || str.charAt(0) === '#'){
                   str = str.substring(1);
               }
               var items = str.split('/');
@@ -544,7 +545,7 @@
                                 return;
                             }
 
-                            var index = _triggerQueue.indexOf(key);
+                            var index = $.inArray(key, _triggerQueue);
                             if(index > -1) {
                                 ordered.push(key);
                                 _triggerQueue.splice(index, 1);
