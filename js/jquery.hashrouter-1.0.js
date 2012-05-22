@@ -47,10 +47,9 @@
                 _bindings = {};
                 _unique = 0;
                 $(window).hashchange(function() {
-                    var h = location.hash;
-                    console.log(h);
-                    _hashUpdated(h);
+                    _hashUpdated(location.hash);
                 });
+                _hashUpdated(location.hash);
                 $.hr.parseElement($(document));
             };
 

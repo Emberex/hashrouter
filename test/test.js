@@ -221,5 +221,13 @@ asyncTest("complicated routes trigger in correct order", function() {
     $.hr.triggerAll();
 });
 
-
+asyncTest("values in url on page load can be read", function() {
+    $.hr.setUrl({'page':'page1', 'id':'1'}, true);
+    testSetup();
+    var page = $.hr.get('page');
+    equal('page1', page);
+    var id = $.hr.get('id');
+    equal('1', id);
+    start();
+});
 
